@@ -45,10 +45,9 @@ app.post('/api/htmlbody', function (req, res) {
             res.send(err);
             return console.log(err)
         };
-        console.log(res); // { filename: '/app/test.pdf' }
-        res.send(res);
+        console.log(res); // { filename: '/app/test.pdf' }        
     });
-    
+    res.download(`${__dirname}/test.pdf`);    
 });
 
 

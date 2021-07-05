@@ -43,18 +43,33 @@ app.post('/api/htmlbody', async function (req, res) {
     // use html to create pdf 
     // dowenload pdf 
 
-    pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' }).then(() => {
 
-        res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
-            if (err) {
-                // Handle error, but keep in mind the response may be partially-sent
-                // so check res.headersSent
-                console.log(err);
-            } else {
-                // decrement a download credit, etc.
-            }
-        })
-    })
+        let fx = await pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' });
+        if (fx.filename) {
+            res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
+                if (err) {
+                    // Handle error, but keep in mind the response may be partially-sent
+                    // so check res.headersSent
+                    console.log(err);
+                } else {
+                    // decrement a download credit, etc.
+                }
+            })
+        }
+  
+
+    // pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' }).then(() => {
+
+    //     res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
+    //         if (err) {
+    //             // Handle error, but keep in mind the response may be partially-sent
+    //             // so check res.headersSent
+    //             console.log(err);
+    //         } else {
+    //             // decrement a download credit, etc.
+    //         }
+    //     })
+    // })
 
     // await pdf.create(htmlBody, options).toFile('./temp.pdf', function (err, res) {
     //     if (err) {

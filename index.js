@@ -1,6 +1,7 @@
 const fs = require('fs');
-const pdf = require('html-pdf');
 const options = { format: 'A4' };
+const Promise = require('bluebird');
+const pdf = Promise.promisifyAll(require('html-pdf'));
 
 const express = require('express');
 const app = express();
@@ -33,21 +34,36 @@ app.post('/api/courses', function (req, res) {
     courses.push(course);
     res.send(course);
 });
-app.post('/api/htmlbody', function (req, res) {
+app.post('/api/htmlbody', async function (req, res) {
     const htmlBody = req.body.htmlbody;
+    const file_name = req.body.name || 'unknown';
     console.log(htmlBody);
 
     // received the html
     // use html to create pdf 
     // dowenload pdf 
-    pdf.create(htmlBody, options).toFile('./test.pdf', function (err, res) {
-        if (err) {
-            res.send(err);
-            return console.log(err)
-        };
-        console.log(res); // { filename: '/app/test.pdf' }        
-    });
-    res.download(`${__dirname}/test.pdf`);    
+    
+    pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' }).then(() => {
+
+        res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
+            if (err) {
+                // Handle error, but keep in mind the response may be partially-sent
+                // so check res.headersSent
+                console.log(err);
+            } else {
+                // decrement a download credit, etc.
+            }
+        })
+    })
+
+    // await pdf.create(htmlBody, options).toFile('./temp.pdf', function (err, res) {
+    //     if (err) {
+    //         res.send(err);
+    //         return console.log(err)
+    //     };
+    //     console.log(res);
+    // });
+
 });
 
 

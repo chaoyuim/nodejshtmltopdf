@@ -38,7 +38,7 @@ app.post('/api/courses', function (req, res) {
 app.post('/api/htmlbody', async function (req, res) {
     let htmlBody = req.body.htmlbody;
     const file_name = req.body.name || 'unknown';
-    const options = { phantomPath: './node_modules/phantomjs-prebuilt/lib/phantomjs',format:'A4',header: {  "height": "5mm"},footer: { "height": "5mm"}, border:{top:'10px',bottom:'10px',left:'20px',right:'20px'}};
+    const options = { phantomPath: phantomjs.path,format:'A4',header: {  "height": "5mm"},footer: { "height": "5mm"}, border:{top:'10px',bottom:'10px',left:'20px',right:'20px'}};
     console.log(htmlBody);
     if(!htmlBody){
         htmlBody = req.body;

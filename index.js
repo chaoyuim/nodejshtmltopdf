@@ -1,11 +1,12 @@
 const fs = require('fs');
-const options = { format: 'A4' };
+
 const Promise = require('bluebird');
 const pdf = Promise.promisifyAll(require('html-pdf'));
-
+const bodyParser = require('body-parser')
 const express = require('express');
 const app = express();
 app.use(express.json());
+app.use(bodyParser.text({ type: 'text/html' }))
 
 
 
@@ -35,31 +36,22 @@ app.post('/api/courses', function (req, res) {
     res.send(course);
 });
 app.post('/api/htmlbody', async function (req, res) {
-    const htmlBody = req.body.htmlbody;
+    let htmlBody = req.body.htmlbody;
     const file_name = req.body.name || 'unknown';
+    const options = {format:'A4',header: {  "height": "5mm"},footer: { "height": "5mm"}, border:{top:'10px',bottom:'10px',left:'20px',right:'20px'}};
     console.log(htmlBody);
+    if(!htmlBody){
+        htmlBody = req.body;
+    }
 
-    // received the html
-    // use html to create pdf 
-    // dowenload pdf 
+    pdf.create(htmlBody,options).toBuffer(function(err, buffer){
+        res.type('application/pdf');
+        res.end(buffer, 'binary');
+    });
 
 
-        let fx = await pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' });
-        if (fx.filename) {
-            res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
-                if (err) {
-                    // Handle error, but keep in mind the response may be partially-sent
-                    // so check res.headersSent
-                    console.log(err);
-                } else {
-                    // decrement a download credit, etc.
-                }
-            })
-        }
-  
-
+    // received the html // use html to create pdf  // dowenload pdf 
     // pdf.createAsync(htmlBody, { format: 'A4', filename: 'something.pdf' }).then(() => {
-
     //     res.download(`${__dirname}/something.pdf`, `${file_name}.pdf`, function (err) {
     //         if (err) {
     //             // Handle error, but keep in mind the response may be partially-sent
@@ -70,15 +62,6 @@ app.post('/api/htmlbody', async function (req, res) {
     //         }
     //     })
     // })
-
-    // await pdf.create(htmlBody, options).toFile('./temp.pdf', function (err, res) {
-    //     if (err) {
-    //         res.send(err);
-    //         return console.log(err)
-    //     };
-    //     console.log(res);
-    // });
-
 });
 
 

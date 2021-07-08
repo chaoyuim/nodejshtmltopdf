@@ -41,6 +41,7 @@ app.post('/api/htmlbody', async function (req, res) {
     const options = {
         phantomPath: phantomjs.path,
         format: 'A4',
+        zoomFactor: "1", 
         header: { "height": "5mm" },
         footer: { "height": "5mm" },
         border: { top: '10px', bottom: '10px', left: '20px', right: '20px' }

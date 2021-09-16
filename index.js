@@ -8,6 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.text({ type: 'text/html' }))
 var phantomjs = require('phantomjs-prebuilt');
+const puppeteer = require('puppeteer');
 
 
 
@@ -37,24 +38,38 @@ app.post('/api/courses', function (req, res) {
 });
 app.post('/api/htmlbody', async function (req, res) {
     let htmlBody = req.body.htmlbody;
-    const file_name = req.body.name || 'unknown';
-    const options = {
-        phantomPath: phantomjs.path,
-        format: 'A4',
-        zoomFactor: "1", 
-        header: { "height": "5mm" },
-        footer: { "height": "5mm" },
-        border: { top: '10px', bottom: '10px', left: '20px', right: '20px' }
-    };
-    console.log(htmlBody);
+   // const file_name = req.body.name || 'unknown';
+   // const options = {
+   //     format:'A4'
+   // };
+   // console.log(htmlBody);
     if (!htmlBody) {
         htmlBody = req.body;
     }
 
-    pdf.create(htmlBody, options).toBuffer(function (err, buffer) {
-        res.type('application/pdf');
-        res.end(buffer, 'binary');
-    });
+   const browser = await puppeteer.launch({ args:["--no-sandbox","--disabled-setupid-sandbox"] });
+   const page = await browser.newPage();
+   await page.setContent(htmlBody);
+   const buffer = await page.pdf(
+	{
+	format : 'A4', 
+	printBackground: true,
+	margin: {
+		left:'20px',
+		top: '25px',
+		right: '20px',
+		bottom:'25px'
+	 }
+	});
+    await browser.close();
+    res.type('application/pdf');
+    res.end(buffer,'binary');
+
+
+   // pdf.create(htmlBody, options).toBuffer(function (err, buffer) {
+   //     res.type('application/pdf');
+   //     res.end(buffer, 'binary');
+   // });
 
 
     // received the html // use html to create pdf  // dowenload pdf 

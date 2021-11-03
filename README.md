@@ -1,5 +1,5 @@
 # nodejshtmltopdf
 
--- install puppet
-    
+-- install puppeteer
+    npm i puppeteer
 -- install chrome
